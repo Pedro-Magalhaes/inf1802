@@ -31,12 +31,13 @@ public class TweetLifecycleManager implements LifecycleManager, Serializable {
 
         this.twitterStream = this.tf.getInstance();
 
-        this.twitterStream.addListener(new TweetListener());
+
     }
 
     @Override
-    public void start() {
-        this.twitterStream.filter(new FilterQuery("rio de janeiro"));
+    public void start( String filter ) {
+        this.twitterStream.addListener(new TweetListener());
+        this.twitterStream.filter(filter);
         logger.info("started the stream");
     }
 
@@ -44,6 +45,7 @@ public class TweetLifecycleManager implements LifecycleManager, Serializable {
     public void stop() {
         this.twitterStream.cleanUp();
         this.twitterStream.clearListeners();
+        logger.info("startoped the stream");
     }
 
 
