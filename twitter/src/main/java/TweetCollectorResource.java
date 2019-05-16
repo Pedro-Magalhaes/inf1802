@@ -1,8 +1,5 @@
 import javax.inject.Inject;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -18,11 +15,9 @@ public class TweetCollectorResource {
      * @return 200 OK no caso de successo ou 500 em caso de falha
      */
     @GET
-    public Response start( @QueryParam("q") String query) {
+    public Response start( @DefaultValue ("rio de janeiro")@QueryParam("q") String query) {
         Response r = null;
-        if(query == null) {
-            query = "";
-        }
+        
         logger.info("stream filter: " + query);
         try {
             manager.start(query);
