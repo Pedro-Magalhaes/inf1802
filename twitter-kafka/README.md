@@ -4,11 +4,16 @@ Nesse exercício, usaremos a API de stream do Twitter para coletar Tweets que po
 Adaptado para usr o kafka como sistema de mensageria
 
 Para deixar o exercício mais interessante, a solução vai usar um serviço REST que inicia e finaliza a coleta de Tweets.
-O serviço é iniciado com:
+O serviço é iniciado com e o filtro aplicado é "rio de janeiro":
+
 > curl http://localhost:8080/tweets/collector
-Pode ser passado um parametro string opcional "q" indicando qual filtro deve ser usado nos tweets
+
+Pode ser passado um parametro string opcional "q" indicando qual filtro deve ser usado nos tweets:
+
 > curl http://localhost:8080/tweets/collector?q=Flamengo
+
 O serviço é finalizado com:
+
 > curl --request DELETE http://localhost:8090/tweets/collector
 
 
