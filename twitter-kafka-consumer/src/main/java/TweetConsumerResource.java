@@ -5,13 +5,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @Path("tweets/collector")
-public class TweetCollectorResource {
+public class TweetConsumerResource {
      @Inject
      LifecycleManager manager;
-    private static final Logger logger = Logger.getLogger(TweetCollectorResource.class.getName());
+    private static final Logger logger = Logger.getLogger(TweetConsumerResource.class.getName());
 
     /**
-     * Inicia o serviço de Coleta de Tweets
+     * Inicia o serviço de Consumo de Tweets
      * @return 200 OK no caso de successo ou 500 em caso de falha
      */
     @GET
@@ -20,7 +20,7 @@ public class TweetCollectorResource {
 
         try {
             manager.start();
-            r = Response.ok("Coletor de Twitter iniciado")
+            r = Response.ok("Consumer de Twitter iniciado")
                     .build();
         } catch (Exception ex) {
             logger.log(Level.SEVERE, null, ex);
@@ -30,7 +30,7 @@ public class TweetCollectorResource {
     }
 
     /**
-     * Finaliza o serviço de Coleta de Tweets
+     * Finaliza o serviço de Consumo de Tweets
      * @return 200 OK no caso de successo ou 500 em caso de falha
      */
     @DELETE
@@ -38,7 +38,7 @@ public class TweetCollectorResource {
         Response r = null;
         try {
             manager.stop();
-            r = Response.ok("Coletor de Twitter finalizado")
+            r = Response.ok("Consumer de Twitter finalizado")
                     .build();
         } catch (Exception ex) {
             logger.log(Level.SEVERE, null, ex);
