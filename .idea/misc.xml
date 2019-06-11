@@ -7,6 +7,9 @@
         <option value="$PROJECT_DIR$/twitter/pom.xml" />
         <option value="$PROJECT_DIR$/twitter-kafka/pom.xml" />
         <option value="$PROJECT_DIR$/ReactiveMagazine/pom.xml" />
+        <option value="$PROJECT_DIR$/wordCounter/pom.xml" />
+        <option value="$PROJECT_DIR$/pom.xml" />
+        <option value="$PROJECT_DIR$/favoriteColor/pom.xml" />
       </list>
     </option>
   </component>
