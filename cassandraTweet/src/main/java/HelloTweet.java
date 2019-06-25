@@ -32,8 +32,11 @@ public class HelloTweet {
             Tweet[] ts = new Tweet[5];
 
             for (int i = 0; i < 5; i++) {
+                LocalDate dt = LocalDate.fromYearMonthDay(2019,01,20 + i);
+
+
                 ts[i] = new Tweet(UUID.randomUUID(),"user"+i, "texto do user"+i,
-                        LocalDate.fromMillisSinceEpoch(System.currentTimeMillis()));
+                        dt);
                 br.inserttweet(ts[i]);
             }
 

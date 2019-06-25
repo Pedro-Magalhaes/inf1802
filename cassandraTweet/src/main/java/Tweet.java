@@ -46,6 +46,9 @@ public class Tweet {
     }
     @Override
     public String toString() {
-        return "tweet id: " + uuid + " From user: " + user +  " \n " + text;
+        return "tweet id: " + uuid +
+                " From user: " + user +
+                " Date: " + createdAt.toString() +
+                " \n " + text;
     }
 }
