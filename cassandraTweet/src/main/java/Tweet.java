@@ -8,6 +8,13 @@ public class Tweet {
     public String user;
     public String text;
     public LocalDate createdAt;
+    public boolean isTruncated;
+    public String source;
+    public String geolocation;
+    public boolean isFavorited;
+    public int favoritedCount;
+    public String contributors;
+
 
     public Tweet() {  }
 
@@ -23,6 +30,30 @@ public class Tweet {
         this.user = user;
         this.text = text;
         this.createdAt = createdAt;
+    }
+
+    public Tweet(UUID uuid, String user, String text, LocalDate createdAt, boolean isFavorited,
+                 int favoritedCount) {
+        this.uuid = uuid;
+        this.user = user;
+        this.text = text;
+        this.createdAt = createdAt;
+        this.isFavorited = isFavorited;
+        this.favoritedCount = favoritedCount;
+    }
+
+    public Tweet(UUID uuid, String user, String text, LocalDate createdAt, boolean isTruncated, String source,
+                 String geolocation, boolean isFavorited, int favoriteCount, String contributors) {
+        this.uuid = uuid;
+        this.user = user;
+        this.text = text;
+        this.createdAt = createdAt;
+        this.isTruncated = isTruncated;
+        this.source = source;
+        this.geolocation = geolocation;
+        this.isFavorited = isFavorited;
+        this.favoritedCount = favoriteCount;
+        this.contributors = contributors;
     }
 
     public void setUser(String user) {
@@ -49,6 +80,10 @@ public class Tweet {
         return "tweet id: " + uuid +
                 " From user: " + user +
                 " Date: " + createdAt.toString() +
-                " \n " + text;
+                " isFavorited: " + isFavorited +
+                " favoritedCount: " + favoritedCount +
+                "\n" + text;
     }
+
+
 }
