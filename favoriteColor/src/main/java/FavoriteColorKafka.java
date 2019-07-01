@@ -42,9 +42,9 @@ public class FavoriteColorKafka {
         // 1 - Stream lido do Kafka
         KStream<String, String> colorLines = builder.stream(inputColorStream);
         colorLines
-                .flatMapValues(textLine -> Arrays.asList(textLine.split(",")))
-                .selectKey((key, value) -> key)
-                .mapValues(colorLine -> colorLine.toLowerCase().trim())
+                //.flatMapValues(textLine -> Arrays.asList(textLine.split("\\s*,\\s*")))
+                .selectKey((key, value) -> value.split("\\s*,\\s*")[0])
+                .mapValues(colorLine -> colorLine.split("\\s*,\\s*")[1].toLowerCase().trim())
                 .filter( (k,v) -> v.equalsIgnoreCase("vermelho") ||
                                   v.equalsIgnoreCase("azul") ||
                                   v.equalsIgnoreCase("verde"))
@@ -52,7 +52,8 @@ public class FavoriteColorKafka {
 
         KTable<String, String> colorTable = builder.table(consolidateColorStream);
 
-        colorTable.groupBy( (key,value) -> new KeyValue<>(value,value)).count().to(outputColorStream);
+        KTable<String, Long> colorTableCount = colorTable.groupBy( (key,value) -> new KeyValue<>(value,value)).count();
+        colorTableCount.to(Serdes.String(), Serdes.Long(),outputColorStream);
 
 
 
