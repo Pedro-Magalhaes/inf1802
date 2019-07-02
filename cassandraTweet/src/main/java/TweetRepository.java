@@ -187,6 +187,7 @@ public class TweetRepository {
             tweets.add(s);
 
         }
+
         logger.info("Finalizada");
         return tweets;
     }

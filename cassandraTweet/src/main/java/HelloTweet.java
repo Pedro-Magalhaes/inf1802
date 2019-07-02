@@ -61,6 +61,8 @@ public class HelloTweet {
             }
 
             //System.out.println("Tweets deletados");
+            br.selectAll();
+            br.selectAllByFavCount("user");
 
 
         } finally {
