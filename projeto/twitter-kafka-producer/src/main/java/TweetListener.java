@@ -19,14 +19,14 @@ public class TweetListener implements StatusListener {
     }
     @Override
     public void onStatus(Status status) {
+        System.out.println(status.getPlace());
         int num_favorite = status.getFavoriteCount();
         String geoLocation = status.getGeoLocation() != null ? status.getGeoLocation().toString() : "";
         boolean is_favorited = num_favorite == 0 ? false : true;
-
         Tweet t = new Tweet(UUID.randomUUID(),status.getUser().getName(),status.getText(),status.getCreatedAt(),status.isTruncated(),status.getSource(),
                 geoLocation,is_favorited, num_favorite,status.getContributors().toString());
-
-        logger.info("Tweet criado: " + t.toString());
+        //t.setCountry(country);
+        logger.info("Tweet criado: " + t.toString() + " FAV " + t.favoritedCount);
 
         ProducerRecord<String, Tweet> record = new ProducerRecord<>(topic, t.user ,t);
         this.sendMessage(record);

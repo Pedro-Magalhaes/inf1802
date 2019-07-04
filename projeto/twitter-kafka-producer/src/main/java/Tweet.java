@@ -15,6 +15,7 @@ public class Tweet {
     public boolean isFavorited;
     public int favoritedCount;
     public String contributors;
+    private String country;
 
 
     public Tweet() {  }
@@ -85,6 +86,12 @@ public class Tweet {
                 " favoritedCount: " + favoritedCount +
                 "\n" + text;
     }
+    public String getCountry() {
+        return country;
+    }
 
+    public void setCountry(String country) {
+        this.country = country;
+    }
 
 }

@@ -12,6 +12,7 @@ public class TweetRepository {
     private static final Logger logger = Logger.getLogger(TweetRepository.class.getName());
     public static final String TABLE_NAME = "tweets";
     public static final String TABLE_NAME_BY_FAV_COUNT = TABLE_NAME + "_favoriteCount";
+    public static final String TABLE_NAME_BY_COUNTRY = TABLE_NAME + "_country";
 
 
     private Session session;
@@ -56,8 +57,8 @@ public class TweetRepository {
                 .append(TABLE_NAME)
                 .append("(id, user, text, favoriteCount, isFavorited, date) ")
                 .append("VALUES (").append(tw.getUuid()).append(", '")
-                .append(tw.user).append("', '")
-                .append(tw.text).append("', ")
+                .append(tw.user).append("', $$")
+                .append(tw.text).append(" $$, ")
                 .append(tw.favoritedCount).append(", ")
                 .append(tw.isFavorited).append(", '")
                 .append(LocalDate.fromMillisSinceEpoch(tw.createdAt.getTime())).append("');");
@@ -154,8 +155,8 @@ public class TweetRepository {
                 .append(TABLE_NAME_BY_FAV_COUNT)
                 .append("(id, user, text, favoriteCount, date) ")
                 .append("VALUES (").append(tw.getUuid()).append(", '")
-                .append(tw.user).append("', '")
-                .append(tw.text).append("', ")
+                .append(tw.user).append("', $$")
+                .append(tw.text).append(" $$, ")
                 .append(tw.favoritedCount).append(", '")
                 .append(LocalDate.fromMillisSinceEpoch(tw.createdAt.getTime())).append("');");
         final String query = sb.toString();
@@ -228,6 +229,116 @@ public class TweetRepository {
 
 
     /*
+    * Get tweets by country
+    * */
+
+    /*
+     * Funçoes para a tabela por favorite count de cada usuario  ***********************************
+     * os tweets de count == 0 não serao inseridos
+     * Partition key sera o user com clustering key por favorited count decrescente
+     * */
+
+    public void createTableByCountry() {
+        logger.info("Começando");
+        StringBuilder sb = new StringBuilder("CREATE TABLE IF NOT EXISTS ")
+                .append(TABLE_NAME_BY_COUNTRY).append("(")
+                .append("id uuid, ")
+                .append("user text, ")
+                .append("country text, ")
+                .append("text text, ")
+                .append("favoriteCount int, ")
+                .append("date date, ")
+                .append(" PRIMARY KEY (country, favoriteCount, id))")
+                .append(" WITH CLUSTERING ORDER BY ( favoriteCount DESC, id ASC );");
+
+        final String query = sb.toString();
+        logger.info(query);
+        session.execute(query);
+        logger.info("Finalizada");
+    }
+
+
+
+    public void inserttweetByCountry(Tweet tw) {
+        logger.info("Começando");
+        StringBuilder sb = new StringBuilder("INSERT INTO ")
+                .append(TABLE_NAME_BY_FAV_COUNT)
+                .append("(id, user, country ,text, favoriteCount, date) ")
+                .append("VALUES (").append(tw.getUuid()).append(", '")
+                .append("VALUES (").append(tw.getCountry()).append("', '")
+                .append(tw.user).append("', $$")
+                .append(tw.text).append(" $$, ")
+                .append(tw.favoritedCount).append(", '")
+                .append(LocalDate.fromMillisSinceEpoch(tw.createdAt.getTime())).append("');");
+        final String query = sb.toString();
+        logger.info(query);
+        session.execute(query);
+        logger.info("Finalizada");
+    }
+
+
+
+    public List<Tweet> selectAllByCountry(String country) {
+        logger.info("Começando");
+        StringBuilder sb = new StringBuilder("SELECT * FROM ")
+                .append(TABLE_NAME_BY_COUNTRY)
+                .append(" WHERE country = '").append(country)
+                .append("' ;");
+
+        final String query = sb.toString();
+        logger.info(query);
+        ResultSet rs = session.execute(query);
+
+        List<Tweet> tweets = new ArrayList<Tweet>();
+
+        for (Row r : rs) {
+            LocalDate ld = r.getDate("date");
+            Tweet s = new Tweet(r.getUUID("id"),
+                    r.getString("user"),
+                    r.getString("text"),
+                    new Date(ld.getMillisSinceEpoch()),
+                    true,
+                    r.getInt("favoriteCount"));
+            logger.info(s.toString());
+            tweets.add(s);
+
+        }
+        logger.info("Finalizada");
+        return tweets;
+    }
+
+
+    public void deletetweetByCountry(Tweet tw) {
+        logger.info("Começando");
+        StringBuilder sb = new StringBuilder("DELETE FROM ")
+                .append(TABLE_NAME_BY_COUNTRY)
+                .append(" WHERE id = ").append(tw.getUuid())
+                .append(" AND ")
+                .append(" favoriteCount = ").append(tw.favoritedCount)
+                .append(" AND ")
+                .append(" country = ").append(tw.getCountry())
+                .append("';");
+
+        final String query = sb.toString();
+        logger.info(query);
+        session.execute(query);
+        logger.info("Finalizada");
+    }
+
+    public void deleteTableByCountry(String tableName) {
+        logger.info("Começando");
+        StringBuilder sb = new StringBuilder("DROP TABLE IF EXISTS ")
+                .append(tableName).append(";");
+
+        final String query = sb.toString();
+        logger.info(query);
+        session.execute(query);
+        logger.info("Finalizada");
+    }
+
+
+
+    /*
     * Extra Functions   ***************************************
     */
 
@@ -235,6 +346,7 @@ public class TweetRepository {
         logger.info("Começando");
         this.inserttweet(tw);
         this.inserttweetByFavCount(tw);
+        this.inserttweetByCountry(tw);
         logger.info("Finalizando");
     }
 }

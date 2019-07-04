@@ -35,7 +35,6 @@ public class TweetLifecycleManager implements LifecycleManager, Serializable {
         this.tf = new TwitterStreamFactory( configurationBuilder.build() );
 
         this.twitterStream = this.tf.getInstance();
-
     }
 
     @Override

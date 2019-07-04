@@ -1,3 +1,6 @@
+import com.datastax.driver.core.Cluster;
+import com.datastax.driver.core.LocalDate;
+import com.datastax.driver.core.Session;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -16,6 +19,8 @@ public class TweetConsumer implements LifecycleManager{
     private final KafkaConsumer<String ,Tweet> consumer;
     private boolean shouldContinue;
     private Thread threadConsumer;
+    private Cluster cluster;
+    private TweetRepository br;
 
     public TweetConsumer(){
 
@@ -30,6 +35,9 @@ public class TweetConsumer implements LifecycleManager{
         this.consumer = new KafkaConsumer<>(properties);
         this.consumer.subscribe(Collections.singleton("tweets_input"));
         this.threadConsumer = getThreadConsumer();
+        this.buildCluster();
+        this.initializeRepositoy();
+
     }
 
     public void start() {
@@ -49,7 +57,7 @@ public class TweetConsumer implements LifecycleManager{
         } catch (InterruptedException e) {
             logger.info("Stoped the consumer");
         }
-
+        this.br.selectAll();
     }
 
 
@@ -64,11 +72,33 @@ public class TweetConsumer implements LifecycleManager{
                             ConsumerRecords<String, Tweet> poll = consumer.poll(Duration.ofMillis(1000));
                             for (ConsumerRecord record : poll) {
                                 logger.info(record.topic() + " - " + record.partition() + " - " + record.value());
+                                Tweet tw = (Tweet) record.value();
+                                br.insertTweetBatch(tw);
                             }
                         }
                     }
                 }
         );
+    }
+
+    private void buildCluster() {
+        this.cluster = Cluster.builder()
+                .addContactPoint("localhost")
+                .build();
+    }
+
+    private void initializeRepositoy() {
+        Session session = cluster.connect();
+        KeyspaceRepository sr = new KeyspaceRepository(session);
+        try{
+            sr.createKeyspace("twitter","SimpleStrategy",1);
+        }catch (Exception e) {
+            System.out.println("key space ja estava criada");
+        }
+        sr.useKeyspace("twitter");
+        this.br = new TweetRepository(session);
+        br.createTable();
+        br.createTableByFavCount();
     }
 }
 
