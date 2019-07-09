@@ -21,6 +21,7 @@ public class TweetConsumer implements LifecycleManager{
     private Thread threadConsumer;
     private Cluster cluster;
     private TweetRepository br;
+    private boolean shouldRebuild = false;
 
     public TweetConsumer(){
 
@@ -45,12 +46,15 @@ public class TweetConsumer implements LifecycleManager{
         this.shouldContinue = true;
         logger.info("started the consumer");
         this.threadConsumer = getThreadConsumer();
+        if(this.shouldRebuild == true) {
+            this.createTables();
+        }
         this.threadConsumer.start();
 
 
     }
 
-    public void stop() {
+    public void stop(String shouldDelete) {
         this.shouldContinue = false;
         try {
             this.threadConsumer.join(0);
@@ -58,6 +62,10 @@ public class TweetConsumer implements LifecycleManager{
             logger.info("Stoped the consumer");
         }
         this.br.selectAll();
+        if(shouldDelete.equals("true")) {
+            this.br.deleteTables();
+            this.shouldRebuild = true;
+        }
     }
 
 
@@ -97,8 +105,13 @@ public class TweetConsumer implements LifecycleManager{
         }
         sr.useKeyspace("twitter");
         this.br = new TweetRepository(session);
+        this.createTables();
+    }
+
+    private void createTables() {
         br.createTable();
         br.createTableByFavCount();
+        br.createTableByLang();
     }
 }
 

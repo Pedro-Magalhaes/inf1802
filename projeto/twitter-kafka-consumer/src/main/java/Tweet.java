@@ -16,6 +16,7 @@ public class Tweet {
     public int favoritedCount;
     public String contributors;
     private String country;
+    public String language;
 
 
     public Tweet() {  }
@@ -94,5 +95,13 @@ public class Tweet {
 
     public void setCountry(String country) {
         this.country = country;
+    }
+
+    public String getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
     }
 }

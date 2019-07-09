@@ -19,7 +19,10 @@ public class TweetListener implements StatusListener {
     }
     @Override
     public void onStatus(Status status) {
-        System.out.println(status.getPlace());
+        System.out.println("lang: " + status.getLang());
+        System.out.println("is rt? " + status.isRetweet());
+        System.out.println("rt count: "  + status.getRetweetCount());
+        System.out.println("Is sensitive? " + status.isPossiblySensitive());
         int num_favorite = status.getFavoriteCount();
         String geoLocation = status.getGeoLocation() != null ? status.getGeoLocation().toString() : "";
         boolean is_favorited = num_favorite == 0 ? false : true;

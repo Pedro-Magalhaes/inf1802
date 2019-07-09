@@ -34,10 +34,10 @@ public class TweetConsumerResource {
      * @return 200 OK no caso de successo ou 500 em caso de falha
      */
     @DELETE
-    public Response stop() {
+    public Response stop(@DefaultValue ("false")@QueryParam("q") String shouldDelete) {
         Response r = null;
         try {
-            manager.stop();
+            manager.stop(shouldDelete);
             r = Response.ok("Consumer de Twitter finalizado")
                     .build();
         } catch (Exception ex) {
